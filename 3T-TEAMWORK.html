@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3T – TEAMWORK | Nền Tảng Làm Việc Nhóm Toàn Diện</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .kanban-col {
+            min-height: calc(100vh - 220px);
+        }
+    </style>
+</head>
+<body class="h-full text-slate-800 font-sans antialiased overflow-hidden">
+    <div class="flex h-screen bg-slate-100">
+
+        <!-- 1. SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="w-64 bg-slate-900 text-slate-300 flex flex-col transition-all duration-300 z-30 shrink-0 absolute md:relative -translate-x-full md:translate-x-0 h-full">
+            <!-- Brand Header -->
+            <div class="h-16 flex items-center justify-between px-6 bg-slate-950/50 border-b border-slate-800">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-brand-500/30">
+                        3T
+                    </div>
+                    <span class="text-lg font-bold text-white tracking-wide">3T – TEAMWORK</span>
+                </div>
+                <button id="close-sidebar-btn" class="md:hidden text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
+                <div class="px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Không gian làm việc</div>
+                
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-brand-600 text-white">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span>Tổng Quan</span>
+                </button>
+
+                <button onclick="switchTab('kanban')" id="nav-kanban" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+                    <i data-lucide="kanban" class="w-5 h-5"></i>
+                    <span>Bảng Kanban</span>
+                    <span id="kanban-badge" class="ml-auto bg-brand-500/20 text-brand-400 text-xs px-2 py-0.5 rounded-full font-semibold">7</span>
+                </button>
+
+                <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+                    <i data-lucide="calendar" class="w-5 h-5"></i>
+                    <span>Lịch & Hạn Chót</span>
+                </button>
+
+                <button onclick="switchTab('chat')" id="nav-chat" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                    <span>Thảo Luận Nhóm</span>
+                    <span class="ml-auto bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded-full font-semibold">7 TV</span>
+                </button>
+
+                <button onclick="switchTab('files')" id="nav-files" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+                    <i data-lucide="folder-open" class="w-5 h-5"></i>
+                    <span>Tài Liệu & Files</span>
+                </button>
+
+                <button onclick="switchTab('analytics')" id="nav-analytics" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    <span>Báo Cáo & Thống Kê</span>
+                </button>
+
+                <button onclick="switchTab('support')" id="nav-support" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition-colors">
+                    <i data-lucide="help-circle" class="w-5 h-5"></i>
+                    <span>Hỗ Trợ & Trợ Giúp</span>
+                </button>
+
+                <div class="pt-4 px-3 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">Dự án chính</div>
+                <div class="space-y-1">
+                    <a href="#" class="flex items-center justify-between px-3 py-2 text-sm text-slate-400 hover:text-white rounded-md hover:bg-slate-800">
+                        <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 mr-2.5"></span>Website Redesign</span>
+                        <span class="text-xs text-slate-500">80%</span>
+                    </a>
+                    <a href="#" class="flex items-center justify-between px-3 py-2 text-sm text-slate-400 hover:text-white rounded-md hover:bg-slate-800">
+                        <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-indigo-400 mr-2.5"></span>Mobile App v2.0</span>
+                        <span class="text-xs text-slate-500">45%</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Current User Profile Bottom (Click directly to edit avatar & profile) -->
+            <div class="p-3 border-t border-slate-800 bg-slate-950/30">
+                <div onclick="openProfileModal()" class="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-800 cursor-pointer transition-colors group" title="Bấm để đổi ảnh đại diện">
+                    <div class="relative">
+                        <img id="sidebar-user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="w-9 h-9 rounded-full object-cover ring-2 ring-brand-500/50 group-hover:ring-brand-400 transition-all" alt="Avatar">
+                        <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="camera" class="w-4 h-4 text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-user-name" class="text-sm font-medium text-white truncate">F6 Plus Bá Khí</p>
+                        <p id="sidebar-user-role" class="text-xs text-slate-400 truncate">Leader / Quản lý</p>
+                    </div>
+                    <i data-lucide="camera" class="w-4 h-4 text-slate-400 group-hover:text-white transition-colors"></i>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTAINER -->
+        <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+            
+            <!-- TOP HEADER NAVBAR -->
+            <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-8 z-20 shrink-0">
+                <div class="flex items-center space-x-4">
+                    <button id="mobile-menu-btn" class="md:hidden text-slate-600 hover:text-slate-900 focus:outline-none">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                    <!-- Search Input -->
+                    <div class="relative hidden sm:block w-64 lg:w-96">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="globalSearch" onkeyup="filterTasks()" placeholder="Tìm kiếm công việc, thành viên, tài liệu..." class="w-full pl-9 pr-4 py-2 bg-slate-100 focus:bg-white text-sm text-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 border border-transparent transition-all">
+                    </div>
+                </div>
+
+                <!-- Right Header Actions -->
+                <div class="flex items-center space-x-3">
+                    <button onclick="openTaskModal()" class="flex items-center space-x-2 bg-brand-600 hover:bg-brand-700 text-white px-3.5 py-2 rounded-lg text-sm font-medium shadow-sm transition-all">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Thêm nhiệm vụ</span>
+                    </button>
+
+                    <div class="h-6 w-px bg-slate-200 mx-1"></div>
+
+                    <!-- Notification Toggle -->
+                    <button class="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg relative transition-colors" onclick="showToast('Bạn có 3 thông báo mới từ nhóm!')">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+                    </button>
+
+                    <!-- Clickable Avatar to Open Avatar & Profile Editor -->
+                    <button onclick="openProfileModal()" class="relative group p-0.5 rounded-full hover:ring-2 hover:ring-brand-500 transition-all focus:outline-none" title="Bấm vào đây để thay đổi ảnh đại diện">
+                        <img id="header-user-avatar" class="inline-block h-9 w-9 rounded-full object-cover ring-2 ring-brand-500" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80">
+                        <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i data-lucide="camera" class="w-4 h-4 text-white"></i>
+                        </div>
+                    </button>
+                </div>
+            </header>
+
+            <!-- MAIN VIEW CONTAINER -->
+            <main class="flex-1 overflow-y-auto p-4 lg:p-8 bg-slate-50">
+
+                <!-- 1. DASHBOARD VIEW -->
+                <section id="view-dashboard" class="space-y-6">
+                    <!-- Clean Welcome Banner -->
+                    <div class="bg-gradient-to-r from-brand-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+                        <div class="relative z-10 max-w-2xl">
+                            <h1 class="text-2xl lg:text-3xl font-bold mb-2">Chào mừng <span id="dash-user-name">F6 Plus Bá Khí</span> đến với 3T – TEAMWORK! 👋</h1>
+                            <p class="text-brand-100 text-sm lg:text-base mb-4">Dự án nhóm gồm 7 thành viên đang hoạt động rất tích cực. Đã hoàn thành 3/7 nhiệm vụ tuần này.</p>
+                            <div class="flex items-center space-x-3">
+                                <button onclick="switchTab('kanban')" class="bg-white text-brand-600 hover:bg-brand-50 font-semibold text-sm px-4 py-2 rounded-lg transition-colors shadow">
+                                    Mở Bảng Kanban
+                                </button>
+                                <button onclick="switchTab('chat')" class="bg-brand-700 hover:bg-brand-800 text-white font-medium text-sm px-4 py-2 rounded-lg transition-colors border border-brand-500/50">
+                                    Trò chuyện nhóm
+                                </button>
+                            </div>
+                        </div>
+                        <div class="absolute -right-6 -bottom-10 opacity-15 pointer-events-none">
+                            <i data-lucide="users" class="w-64 h-64 text-white"></i>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Stats -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                        <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-center space-x-4">
+                            <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                                <i data-lucide="check-square" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Tổng việc</p>
+                                <h3 id="stat-total" class="text-2xl font-bold text-slate-900">7</h3>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-center space-x-4">
+                            <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                                <i data-lucide="clock" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Đang thực hiện</p>
+                                <h3 id="stat-progress" class="text-2xl font-bold text-slate-900">2</h3>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-center space-x-4">
+                            <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                                <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Hoàn thành</p>
+                                <h3 id="stat-done" class="text-2xl font-bold text-slate-900">3</h3>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-center space-x-4">
+                            <div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                                <i data-lucide="users" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Thành viên nhóm</p>
+                                <h3 class="text-2xl font-bold text-slate-900">7</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Member Cards List -->
+                    <div class="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-bold text-slate-900">Danh sách 7 Thành viên Nhóm</h2>
+                            <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full">Đang hoạt động</span>
+                        </div>
+                        <div id="membersListGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Grid Charts & Recent Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-lg font-bold text-slate-900">Tiến độ công việc theo thời gian</h2>
+                                <span class="text-xs text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">Cập nhật thời gian thực</span>
+                            </div>
+                            <div class="h-64 relative">
+                                <canvas id="dashboardChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Activity Stream -->
+                        <div class="bg-white p-6 rounded-xl border border-slate-200/80 shadow-sm">
+                            <h2 class="text-lg font-bold text-slate-900 mb-4">Hoạt động gần đây</h2>
+                            <div class="space-y-4">
+                                <div class="flex space-x-3 text-sm">
+                                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" class="w-8 h-8 rounded-full object-cover shrink-0">
+                                    <div>
+                                        <p class="text-slate-800"><span class="font-semibold">Bùi Duy Đức</span> đã hoàn thành <span class="text-brand-600 font-medium">Thiết kế UI Homepage</span></p>
+                                        <span class="text-xs text-slate-400">10 phút trước</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-3 text-sm">
+                                    <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&auto=format&fit=crop&q=80" class="w-8 h-8 rounded-full object-cover shrink-0">
+                                    <div>
+                                        <p class="text-slate-800"><span class="font-semibold">Lê Văn Đạt</span> vừa cập nhật <span class="text-slate-900 font-medium underline">API_Database_Spec.pdf</span></p>
+                                        <span class="text-xs text-slate-400">45 phút trước</span>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-3 text-sm">
+                                    <img src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&auto=format&fit=crop&q=80" class="w-8 h-8 rounded-full object-cover shrink-0">
+                                    <div>
+                                        <p class="text-slate-800"><span class="font-semibold">Đỗ Mạnh Quân</span> đã nộp bản báo cáo <span class="text-amber-600 font-medium">Testing Report</span></p>
+                                        <span class="text-xs text-slate-400">2 giờ trước</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. KANBAN BOARD VIEW -->
+                <section id="view-kanban" class="hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h1 class="text-2xl font-bold text-slate-900">Bảng Công Việc (Kanban Board)</h1>
+                            <p class="text-slate-500 text-sm">Theo dõi, phân công cho 7 thành viên và chuyển trạng thái nhiệm vụ</p>
+                        </div>
+                        <button onclick="openTaskModal()" class="bg-brand-600 hover:bg-brand-700 text-white text-sm px-4 py-2 rounded-lg flex items-center space-x-2 w-fit shadow-sm">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>Tạo Task Mới</span>
+                        </button>
+                    </div>
+
+                    <!-- Kanban Columns -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 overflow-x-auto pb-4">
+                        
+                        <!-- Column: To Do -->
+                        <div class="bg-slate-200/60 p-3 rounded-xl flex flex-col kanban-col">
+                            <div class="flex items-center justify-between mb-3 px-1">
+                                <span class="font-semibold text-slate-700 flex items-center text-sm">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-slate-500 mr-2"></span>Cần làm (To Do)
+                                </span>
+                                <span id="count-todo" class="bg-slate-300 text-slate-700 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                            </div>
+                            <div id="col-todo" class="space-y-3 flex-1"></div>
+                        </div>
+
+                        <!-- Column: In Progress -->
+                        <div class="bg-slate-200/60 p-3 rounded-xl flex flex-col kanban-col">
+                            <div class="flex items-center justify-between mb-3 px-1">
+                                <span class="font-semibold text-slate-700 flex items-center text-sm">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-brand-500 mr-2"></span>Đang làm (In Progress)
+                                </span>
+                                <span id="count-progress" class="bg-slate-300 text-slate-700 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                            </div>
+                            <div id="col-progress" class="space-y-3 flex-1"></div>
+                        </div>
+
+                        <!-- Column: Review -->
+                        <div class="bg-slate-200/60 p-3 rounded-xl flex flex-col kanban-col">
+                            <div class="flex items-center justify-between mb-3 px-1">
+                                <span class="font-semibold text-slate-700 flex items-center text-sm">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mr-2"></span>Kiểm tra (Review)
+                                </span>
+                                <span id="count-review" class="bg-slate-300 text-slate-700 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                            </div>
+                            <div id="col-review" class="space-y-3 flex-1"></div>
+                        </div>
+
+                        <!-- Column: Done -->
+                        <div class="bg-slate-200/60 p-3 rounded-xl flex flex-col kanban-col">
+                            <div class="flex items-center justify-between mb-3 px-1">
+                                <span class="font-semibold text-slate-700 flex items-center text-sm">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2"></span>Hoàn thành (Done)
+                                </span>
+                                <span id="count-done" class="bg-slate-300 text-slate-700 text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                            </div>
+                            <div id="col-done" class="space-y-3 flex-1"></div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- 3. CALENDAR VIEW -->
+                <section id="view-calendar" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl font-bold text-slate-900">Lịch & Hạn Chót Nhóm</h1>
+                            <p class="text-slate-500 text-sm">Theo dõi kế hoạch, lịch họp và thời hạn của 7 thành viên</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50">Tháng 10, 2026</button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="grid grid-cols-7 bg-slate-50 border-b border-slate-200 text-center text-xs font-bold text-slate-500 py-3">
+                            <div>THỨ 2</div><div>THỨ 3</div><div>THỨ 4</div><div>THỨ 5</div><div>THỨ 6</div><div>THỨ 7</div><div>CHỦ NHẬT</div>
+                        </div>
+                        <div class="grid grid-cols-7 grid-rows-5 text-sm divide-x divide-y divide-slate-100 min-h-[480px]">
+                            <div class="p-2 bg-slate-50/50 text-slate-400">28</div>
+                            <div class="p-2 bg-slate-50/50 text-slate-400">29</div>
+                            <div class="p-2 bg-slate-50/50 text-slate-400">30</div>
+                            <div class="p-2">1</div><div class="p-2">2</div><div class="p-2">3</div><div class="p-2">4</div>
+                            <div class="p-2">5</div><div class="p-2">6</div><div class="p-2">7</div><div class="p-2">8</div><div class="p-2">9</div><div class="p-2">10</div><div class="p-2">11</div>
+                            <div class="p-2">12</div><div class="p-2">13</div>
+                            <div class="p-2">
+                                <span>14</span>
+                                <div class="mt-1 bg-brand-100 text-brand-700 text-xs p-1 rounded font-medium truncate">Họp Sprint Review (7 TV)</div>
+                            </div>
+                            <div class="p-2">15</div><div class="p-2">16</div><div class="p-2">17</div><div class="p-2">18</div>
+                            <div class="p-2">19</div><div class="p-2">20</div>
+                            <div class="p-2 bg-brand-50/40 font-bold text-brand-600">
+                                22 (Hôm nay)
+                                <div class="mt-1 bg-amber-100 text-amber-800 text-xs p-1 rounded font-normal truncate">Bùi Duy Đức: Release UI</div>
+                            </div>
+                            <div class="p-2">23</div><div class="p-2">24</div><div class="p-2">25</div><div class="p-2">26</div>
+                            <div class="p-2">27</div><div class="p-2">28</div><div class="p-2">29</div><div class="p-2">30</div><div class="p-2">31</div>
+                            <div class="p-2 bg-slate-50/50 text-slate-400">1</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. TEAM CHAT VIEW -->
+                <section id="view-chat" class="hidden h-[calc(100vh-140px)] flex flex-col bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
+                    <div class="flex h-full">
+                        <!-- Chat Sidebar -->
+                        <div class="w-1/3 border-r border-slate-200 flex flex-col bg-slate-50">
+                            <div class="p-4 border-b border-slate-200 font-bold text-slate-800">Kênh Trò Chuyện</div>
+                            <div class="overflow-y-auto flex-1">
+                                <div onclick="selectChannel('#chung-du-an')" id="channel-chung" class="p-3 bg-brand-50 border-l-4 border-brand-600 cursor-pointer">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-semibold text-sm text-slate-900"># chung-du-an</span>
+                                        <span class="text-xs text-slate-400">10:15</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 truncate">Bùi Duy Đức: Đã cập nhật xong giao diện mới...</p>
+                                </div>
+                                <div onclick="selectChannel('#tech-dev')" id="channel-tech" class="p-3 hover:bg-slate-100 cursor-pointer border-b border-slate-100">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="font-semibold text-sm text-slate-700"># tech-dev</span>
+                                        <span class="text-xs text-slate-400">Hôm qua</span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 truncate">Lê Văn Đạt: Đã fix xong lỗi database...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Main Screen -->
+                        <div class="flex-1 flex flex-col">
+                            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-white">
+                                <div>
+                                    <h3 id="current-channel-title" class="font-bold text-slate-900 text-sm"># chung-du-an</h3>
+                                    <p class="text-xs text-slate-500">7 thành viên nhóm tham gia</p>
+                                </div>
+                            </div>
+
+                            <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/50">
+                                <div class="flex space-x-3">
+                                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" class="w-8 h-8 rounded-full object-cover">
+                                    <div>
+                                        <div class="flex items-baseline space-x-2">
+                                            <span class="text-xs font-bold text-slate-800">Bùi Duy Đức</span>
+                                            <span class="text-[10px] text-slate-400">10:14 AM</span>
+                                        </div>
+                                        <div class="mt-1 bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 max-w-md">
+                                            Chào cả nhóm! Mọi người xem qua file giao diện mới cập nhật giúp mình nhé!
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex space-x-3">
+                                    <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&auto=format&fit=crop&q=80" class="w-8 h-8 rounded-full object-cover">
+                                    <div>
+                                        <div class="flex items-baseline space-x-2">
+                                            <span class="text-xs font-bold text-slate-800">Lê Văn Đạt</span>
+                                            <span class="text-[10px] text-slate-400">10:16 AM</span>
+                                        </div>
+                                        <div class="mt-1 bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 max-w-md">
+                                            Đã kiểm tra nhé Đức! Phần API kết nối mượt rồi.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Chat Input -->
+                            <form onsubmit="sendChatMessage(event)" class="p-3 bg-white border-t border-slate-200 flex items-center space-x-2">
+                                <input type="text" id="chatInput" placeholder="Nhập tin nhắn..." class="flex-1 border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" required>
+                                <button type="submit" class="bg-brand-600 text-white p-2.5 rounded-lg hover:bg-brand-700 transition-colors">
+                                    <i data-lucide="send" class="w-4 h-4"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. FILE MANAGER VIEW -->
+                <section id="view-files" class="hidden space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl font-bold text-slate-900">Quản Lý Tài Liệu & Files</h1>
+                            <p class="text-slate-500 text-sm">Lưu trữ, tải lên và chia sẻ tệp tin giữa 7 thành viên</p>
+                        </div>
+                        <label class="bg-brand-600 hover:bg-brand-700 text-white text-sm px-4 py-2 rounded-lg flex items-center space-x-2 cursor-pointer w-fit shadow-sm">
+                            <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                            <span>Tải lên Tệp Mới</span>
+                            <input type="file" class="hidden" onchange="handleFileUpload(event)">
+                        </label>
+                    </div>
+
+                    <div id="filesGrid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                            <i data-lucide="file-text" class="w-8 h-8 text-blue-500"></i>
+                            <div class="flex-1 truncate">
+                                <h4 class="font-semibold text-sm text-slate-800 truncate">Ke_hoach_Du_an_3T.docx</h4>
+                                <p class="text-xs text-slate-400">Bùi Duy Đức • 2.4 MB</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                            <i data-lucide="image" class="w-8 h-8 text-emerald-500"></i>
+                            <div class="flex-1 truncate">
+                                <h4 class="font-semibold text-sm text-slate-800 truncate">Banner_Design_v2.png</h4>
+                                <p class="text-xs text-slate-400">Nguyễn Nam Dương • 5.1 MB</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+                            <i data-lucide="code-2" class="w-8 h-8 text-purple-500"></i>
+                            <div class="flex-1 truncate">
+                                <h4 class="font-semibold text-sm text-slate-800 truncate">Database_Schema.sql</h4>
+                                <p class="text-xs text-slate-400">Lê Văn Đạt • 1.2 MB</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. ANALYTICS VIEW -->
+                <section id="view-analytics" class="hidden space-y-6">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900">Báo Cáo & Thống Kê Hiệu Suất</h1>
+                        <p class="text-slate-500 text-sm">Đánh giá tiến độ dự án và mức độ đóng góp của 7 thành viên</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 mb-4">Tỷ lệ trạng thái công việc</h3>
+                            <div class="h-64 relative">
+                                <canvas id="analyticsPieChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                            <h3 class="font-bold text-slate-800 mb-4">Bảng Xếp Hạng Năng Suất Thành Viên</h3>
+                            <div id="analyticsMembersProgress" class="space-y-3">
+                                <!-- Dynamically filled with members -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. SUPPORT & HELP CENTER VIEW -->
+                <section id="view-support" class="hidden space-y-8">
+                    <!-- Support Hero Search Banner -->
+                    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-brand-900 rounded-2xl p-8 text-white text-center shadow-lg relative overflow-hidden">
+                        <div class="relative z-10 max-w-2xl mx-auto space-y-4">
+                            <span class="bg-brand-500/20 text-brand-300 text-xs px-3 py-1 rounded-full font-semibold border border-brand-500/30">Trung Tâm Trợ Giúp 3T</span>
+                            <h1 class="text-2xl lg:text-4xl font-bold tracking-tight">Chúng tôi có thể giúp gì cho bạn?</h1>
+                            <p class="text-slate-300 text-sm">Tìm kiếm hướng dẫn, câu hỏi thường gặp hoặc gửi yêu cầu hỗ trợ trực tiếp tới đội ngũ 3T – TEAMWORK</p>
+                            
+                            <!-- Search Help Articles -->
+                            <div class="relative max-w-xl mx-auto pt-2">
+                                <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                                <input type="text" id="supportSearch" onkeyup="filterFAQ()" placeholder="Nhập từ khóa (VD: đổi ảnh đại diện, dung lượng, kanban...)" class="w-full pl-11 pr-4 py-3.5 bg-white text-slate-900 rounded-xl focus:outline-none focus:ring-4 focus:ring-brand-500/30 shadow-md text-sm placeholder-slate-400">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ Section & Ticket Form Grid -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <!-- FAQ Accordion -->
+                        <div class="lg:col-span-2 space-y-4">
+                            <h2 class="text-lg font-bold text-slate-900 mb-2 flex items-center">
+                                <i data-lucide="help-circle" class="w-5 h-5 mr-2 text-brand-600"></i>
+                                Câu hỏi thường gặp (FAQ)
+                            </h2>
+
+                            <div id="faqList" class="space-y-3">
+                                <div class="faq-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                    <button onclick="toggleFAQ(this)" class="w-full px-5 py-4 text-left font-semibold text-slate-800 text-sm flex justify-between items-center hover:bg-slate-50 transition-colors">
+                                        <span>1. Làm thế nào để thay đổi ảnh đại diện và thông tin cá nhân?</span>
+                                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+                                    </button>
+                                    <div class="faq-answer hidden px-5 pb-4 pt-1 text-sm text-slate-600 border-t border-slate-100 bg-slate-50/50">
+                                        Bạn chỉ cần bấm trực tiếp vào ảnh đại diện (Avatar) ở góc phải trên cùng hoặc góc dưới thanh Menu bên trái. Bảng thay đổi ảnh sẽ lập tức hiện ra.
+                                    </div>
+                                </div>
+
+                                <div class="faq-item bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                                    <button onclick="toggleFAQ(this)" class="w-full px-5 py-4 text-left font-semibold text-slate-800 text-sm flex justify-between items-center hover:bg-slate-50 transition-colors">
+                                        <span>2. Làm sao để phân công nhiệm vụ cho 7 thành viên?</span>
+                                        <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-200"></i>
+                                    </button>
+                                    <div class="faq-answer hidden px-5 pb-4 pt-1 text-sm text-slate-600 border-t border-slate-100 bg-slate-50/50">
+                                        Khi bấm nút "Thêm nhiệm vụ", bạn chọn tên thành viên trong danh sách thả xuống gồm 7 thành viên nhóm (Bùi Duy Đức, Lê Văn Đạt, Nguyễn Ngọc Dương...).
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ticket Form -->
+                        <div class="space-y-6">
+                            <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                                <h3 class="font-bold text-slate-900 text-base mb-1 flex items-center">
+                                    <i data-lucide="send" class="w-4 h-4 mr-2 text-brand-600"></i>
+                                    Gửi Yêu Cầu Hỗ Trợ
+                                </h3>
+                                <p class="text-xs text-slate-500 mb-4">Mô tả vấn đề của bạn, kỹ thuật viên sẽ phản hồi nhanh chóng.</p>
+                                
+                                <form onsubmit="handleSupportSubmit(event)" class="space-y-3">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Họ và tên</label>
+                                        <input type="text" id="supportName" required placeholder="F6 Plus Bá Khí" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Email liên hệ</label>
+                                        <input type="email" id="supportEmail" required placeholder="name@example.com" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-slate-600 mb-1">Nội dung chi tiết</label>
+                                        <textarea id="supportMessage" required rows="3" placeholder="Nhập chi tiết vấn đề..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                                    </div>
+                                    <button type="submit" class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2.5 rounded-lg text-sm transition-colors shadow-sm flex items-center justify-center space-x-2">
+                                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                        <span>Gửi Yêu Cầu</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- DIRECT AVATAR & PROFILE MODAL -->
+    <div id="profileModal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200 overflow-hidden max-h-[90vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center border-b border-slate-100 pb-4 mb-4 shrink-0">
+                <div class="flex items-center space-x-2">
+                    <div class="p-2 bg-brand-50 text-brand-600 rounded-lg">
+                        <i data-lucide="camera" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Thay Đổi Ảnh Đại Diện & Hồ Sơ</h3>
+                        <p class="text-xs text-slate-500">Chọn ảnh từ máy tính hoặc chọn ảnh mẫu</p>
+                    </div>
+                </div>
+                <button onclick="closeProfileModal()" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Form -->
+            <form id="profileForm" onsubmit="handleSaveProfile(event)" class="space-y-5 overflow-y-auto pr-1 flex-1">
+                
+                <!-- Avatar Upload Main Box -->
+                <div class="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-center flex flex-col items-center justify-center relative">
+                    <div class="relative group cursor-pointer mb-3">
+                        <img id="profile-modal-avatar-preview" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow-md">
+                        <label class="absolute inset-0 bg-black/50 rounded-full flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 cursor-pointer transition-all">
+                            <i data-lucide="upload-cloud" class="w-6 h-6 mb-1"></i>
+                            <span class="text-[10px] font-medium">Tải ảnh lên</span>
+                            <input type="file" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                        </label>
+                    </div>
+
+                    <label class="bg-brand-600 hover:bg-brand-700 text-white text-xs px-4 py-2 rounded-lg cursor-pointer transition-colors inline-flex items-center space-x-1.5 font-medium shadow-sm mb-3">
+                        <i data-lucide="upload" class="w-4 h-4"></i>
+                        <span>Chọn ảnh từ thiết bị</span>
+                        <input type="file" accept="image/*" class="hidden" onchange="handleAvatarUpload(event)">
+                    </label>
+
+                    <!-- Quick Preset Avatars -->
+                    <div class="w-full pt-2 border-t border-slate-200/60">
+                        <span class="text-xs text-slate-500 font-medium block mb-2">Hoặc chọn nhanh ảnh có sẵn:</span>
+                        <div class="flex items-center justify-center space-x-3">
+                            <img onclick="selectPresetAvatar('https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80')" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="w-9 h-9 rounded-full cursor-pointer ring-2 ring-transparent hover:ring-brand-500 hover:scale-110 transition-all object-cover">
+                            <img onclick="selectPresetAvatar('https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80')" src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" class="w-9 h-9 rounded-full cursor-pointer ring-2 ring-transparent hover:ring-brand-500 hover:scale-110 transition-all object-cover">
+                            <img onclick="selectPresetAvatar('https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80')" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80" class="w-9 h-9 rounded-full cursor-pointer ring-2 ring-transparent hover:ring-brand-500 hover:scale-110 transition-all object-cover">
+                            <img onclick="selectPresetAvatar('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80')" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" class="w-9 h-9 rounded-full cursor-pointer ring-2 ring-transparent hover:ring-brand-500 hover:scale-110 transition-all object-cover">
+                            <img onclick="selectPresetAvatar('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80')" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" class="w-9 h-9 rounded-full cursor-pointer ring-2 ring-transparent hover:ring-brand-500 hover:scale-110 transition-all object-cover">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Info Input Fields -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Họ và tên <span class="text-red-500">*</span></label>
+                        <input type="text" id="profileFullName" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Chức danh / Vai trò</label>
+                        <input type="text" id="profileRole" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Email <span class="text-red-500">*</span></label>
+                        <input type="email" id="profileEmail" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100 shrink-0">
+                    <button type="button" onclick="closeProfileModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors">Hủy</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-medium shadow-sm transition-colors flex items-center space-x-1.5">
+                        <i data-lucide="check" class="w-4 h-4"></i>
+                        <span>Lưu thay đổi</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl hidden items-center space-x-3 z-50 border border-slate-700 animate-in fade-in slide-in-from-bottom-5">
+        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>
+        <span id="toast-message" class="text-sm font-medium">Thao tác thành công!</span>
+    </div>
+
+    <!-- CREATE TASK MODAL -->
+    <div id="taskModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl relative animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900">Tạo Task Mới</h3>
+                <button onclick="closeTaskModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form onsubmit="handleCreateTask(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tên nhiệm vụ</label>
+                    <input type="text" id="taskTitle" required placeholder="Nhập tiêu đề nhiệm vụ..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Người phụ trách (7 Thành viên)</label>
+                    <select id="taskAssignee" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <!-- Populated dynamically with exact 7 members -->
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Mức độ ưu tiên</label>
+                    <select id="taskPriority" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <option value="Cao">Cao</option>
+                        <option value="Trung bình" selected>Trung bình</option>
+                        <option value="Thấp">Thấp</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nhãn (Tag)</label>
+                    <input type="text" id="taskTag" placeholder="VD: UI/UX, Backend..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" value="Frontend">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeTaskModal()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-600 hover:bg-slate-50">Hủy</button>
+                    <button type="submit" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-lg text-sm font-medium">Tạo Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        // Exact 7 Team Members
+        const teamMembers = [
+            { id: 1, name: 'Bùi Duy Đức', role: 'UI/UX Designer', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80', tasksCount: 3 },
+            { id: 2, name: 'Lê Văn Đạt', role: 'Backend Developer', avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&auto=format&fit=crop&q=80', tasksCount: 2 },
+            { id: 3, name: 'Nguyễn Ngọc Dương', role: 'Frontend Developer', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop&q=80', tasksCount: 2 },
+            { id: 4, name: 'Đỗ Mạnh Quân', role: 'QA / Tester', avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&auto=format&fit=crop&q=80', tasksCount: 1 },
+            { id: 5, name: 'Nguyễn Đăng Nghĩa', role: 'DevOps Engineer', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80', tasksCount: 2 },
+            { id: 6, name: 'Nguyễn Nam Dương', role: 'Product Manager', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80', tasksCount: 1 },
+            { id: 7, name: 'Nguyễn Quang Huy', role: 'Data Analyst', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80', tasksCount: 1 }
+        ];
+
+        // User Profile Global State
+        let currentUser = {
+            fullName: 'F6 Plus Bá Khí',
+            role: 'Leader / Quản lý Dự án',
+            email: 'f6plusbakhi@3tteamwork.com',
+            avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80'
+        };
+
+        // Tasks State with 7 members assigned
+        let tasks = [
+            { id: 1, title: 'Thiết kế Wireframe & UI Homepage', assignee: 'Bùi Duy Đức', priority: 'Cao', tag: 'UI/UX', status: 'done' },
+            { id: 2, title: 'Tối ưu hóa Cơ sở dữ liệu MongoDB', assignee: 'Lê Văn Đạt', priority: 'Trung bình', tag: 'Database', status: 'progress' },
+            { id: 3, title: 'Xây dựng Component Bảng Kanban', assignee: 'Nguyễn Ngọc Dương', priority: 'Cao', tag: 'Frontend', status: 'progress' },
+            { id: 4, title: 'Kiểm thử luồng Đăng nhập & Bảo mật', assignee: 'Đỗ Mạnh Quân', priority: 'Trung bình', tag: 'QA Test', status: 'review' },
+            { id: 5, title: 'Thiết lập pipeline CI/CD trên Docker', assignee: 'Nguyễn Đăng Nghĩa', priority: 'Cao', tag: 'DevOps', status: 'todo' },
+            { id: 6, title: 'Phân tích yêu cầu tính năng v2.0', assignee: 'Nguyễn Nam Dương', priority: 'Thấp', tag: 'Product', status: 'done' },
+            { id: 7, title: 'Báo cáo chỉ số hoạt động hàng tuần', assignee: 'Nguyễn Quang Huy', priority: 'Trung bình', tag: 'Analytics', status: 'done' }
+        ];
+
+        let lineChartInstance = null;
+        let pieChartInstance = null;
+
+        // Render Lucide Icons
+        lucide.createIcons();
+
+        // Update User Interface across all elements
+        function updateUserUI() {
+            // Update Sidebar Avatar & Info
+            document.getElementById('sidebar-user-name').innerText = currentUser.fullName;
+            document.getElementById('sidebar-user-role').innerText = currentUser.role;
+            document.getElementById('sidebar-user-avatar').src = currentUser.avatar;
+
+            // Update Header Avatar
+            document.getElementById('header-user-avatar').src = currentUser.avatar;
+
+            // Update Dashboard Banner Name
+            document.getElementById('dash-user-name').innerText = currentUser.fullName;
+
+            // Sync Form Fields
+            document.getElementById('profileFullName').value = currentUser.fullName;
+            document.getElementById('profileRole').value = currentUser.role;
+            document.getElementById('profileEmail').value = currentUser.email;
+            document.getElementById('profile-modal-avatar-preview').src = currentUser.avatar;
+
+            renderMembersGrid();
+            renderAssigneeDropdown();
+            renderAnalyticsProgress();
+            renderKanban();
+        }
+
+        // Render 7 Members Grid in Dashboard
+        function renderMembersGrid() {
+            const grid = document.getElementById('membersListGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            teamMembers.forEach(m => {
+                const card = document.createElement('div');
+                card.className = "flex items-center space-x-3 p-3 bg-slate-50 border border-slate-200/80 rounded-xl hover:bg-white hover:shadow-sm transition-all";
+                card.innerHTML = `
+                    <img src="${m.avatar}" class="w-10 h-10 rounded-full object-cover ring-2 ring-slate-200">
+                    <div class="min-w-0 flex-1">
+                        <h4 class="font-semibold text-slate-900 text-sm truncate">${m.name}</h4>
+                        <p class="text-xs text-slate-500 truncate">${m.role}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Render Assignee Options (7 Team Members + Current Leader)
+        function renderAssigneeDropdown() {
+            const select = document.getElementById('taskAssignee');
+            if(!select) return;
+            select.innerHTML = '';
+
+            const leaderOpt = document.createElement('option');
+            leaderOpt.value = currentUser.fullName;
+            leaderOpt.innerText = `${currentUser.fullName} (Leader)`;
+            select.appendChild(leaderOpt);
+
+            teamMembers.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.name;
+                opt.innerText = `${m.name} (${m.role})`;
+                select.appendChild(opt);
+            });
+        }
+
+        // Direct Profile Modal Controls
+        function openProfileModal() {
+            updateUserUI();
+            const modal = document.getElementById('profileModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeProfileModal() {
+            const modal = document.getElementById('profileModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleAvatarUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const newAvatarUrl = e.target.result;
+                    currentUser.avatar = newAvatarUrl;
+                    document.getElementById('profile-modal-avatar-preview').src = newAvatarUrl;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function selectPresetAvatar(url) {
+            currentUser.avatar = url;
+            document.getElementById('profile-modal-avatar-preview').src = url;
+        }
+
+        function handleSaveProfile(event) {
+            event.preventDefault();
+            currentUser.fullName = document.getElementById('profileFullName').value.trim();
+            currentUser.role = document.getElementById('profileRole').value.trim();
+            currentUser.email = document.getElementById('profileEmail').value.trim();
+
+            updateUserUI();
+            closeProfileModal();
+            showToast('Cập nhật ảnh đại diện & thông tin thành công!');
+        }
+
+        // Switch Tabs Functionality
+        function switchTab(tabName) {
+            const views = ['dashboard', 'kanban', 'calendar', 'chat', 'files', 'analytics', 'support'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+
+                const nav = document.getElementById(`nav-${v}`);
+                if (nav) {
+                    nav.classList.remove('bg-brand-600', 'text-white');
+                    nav.classList.add('text-slate-400', 'hover:bg-slate-800');
+                }
+            });
+
+            const targetView = document.getElementById(`view-${tabName}`);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const activeNav = document.getElementById(`nav-${tabName}`);
+            if (activeNav) {
+                activeNav.classList.add('bg-brand-600', 'text-white');
+                activeNav.classList.remove('text-slate-400', 'hover:bg-slate-800');
+            }
+
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+
+            if (tabName === 'kanban') renderKanban();
+            if (tabName === 'analytics' || tabName === 'dashboard') updateCharts();
+        }
+
+        // Support Center Accordion & Search
+        function toggleFAQ(button) {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('[data-lucide="chevron-down"]');
+            
+            const isOpen = !answer.classList.contains('hidden');
+            
+            document.querySelectorAll('.faq-answer').forEach(a => a.classList.add('hidden'));
+            document.querySelectorAll('.faq-item button [data-lucide="chevron-down"]').forEach(i => i.style.transform = 'rotate(0deg)');
+
+            if (!isOpen) {
+                answer.classList.remove('hidden');
+                if (icon) icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function filterFAQ() {
+            const query = document.getElementById('supportSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.faq-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    item.classList.remove('hidden');
+                } else {
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3500);
+        }
+
+        function handleSupportSubmit(e) {
+            e.preventDefault();
+            showToast('Yêu cầu hỗ trợ đã gửi thành công!');
+            document.getElementById('supportName').value = '';
+            document.getElementById('supportEmail').value = '';
+            document.getElementById('supportMessage').value = '';
+        }
+
+        // Mobile Sidebar Controls
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.remove('-translate-x-full');
+        });
+        document.getElementById('close-sidebar-btn').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+        });
+
+        // Get avatar helper
+        function getMemberAvatar(name) {
+            if (name === currentUser.fullName) return currentUser.avatar;
+            const found = teamMembers.find(m => m.name === name);
+            return found ? found.avatar : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80';
+        }
+
+        // Kanban Render Engine
+        function renderKanban(filteredTasks = null) {
+            const list = filteredTasks || tasks;
+            const cols = {
+                todo: document.getElementById('col-todo'),
+                progress: document.getElementById('col-progress'),
+                review: document.getElementById('col-review'),
+                done: document.getElementById('col-done')
+            };
+
+            Object.values(cols).forEach(c => c.innerHTML = '');
+
+            const counts = { todo: 0, progress: 0, review: 0, done: 0 };
+
+            list.forEach(task => {
+                counts[task.status]++;
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-all";
+                
+                let priorityColor = 'bg-slate-100 text-slate-700';
+                if(task.priority === 'Cao') priorityColor = 'bg-rose-100 text-rose-700';
+                if(task.priority === 'Trung bình') priorityColor = 'bg-amber-100 text-amber-700';
+
+                const avatarSrc = getMemberAvatar(task.assignee);
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded ${priorityColor}">${task.priority}</span>
+                        <span class="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded">${task.tag}</span>
+                    </div>
+                    <h4 class="font-medium text-slate-800 text-sm mb-3">${task.title}</h4>
+                    <div class="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-slate-100">
+                        <div class="flex items-center space-x-1.5 min-w-0 pr-2">
+                            <img src="${avatarSrc}" class="w-5 h-5 rounded-full object-cover shrink-0">
+                            <span class="font-medium text-slate-600 truncate">${task.assignee}</span>
+                        </div>
+                        <select onchange="changeTaskStatus(${task.id}, this.value)" class="text-xs bg-slate-100 border-none rounded px-1.5 py-1 focus:ring-1 focus:ring-brand-500 shrink-0">
+                            <option value="todo" ${task.status === 'todo' ? 'selected' : ''}>Cần làm</option>
+                            <option value="progress" ${task.status === 'progress' ? 'selected' : ''}>Đang làm</option>
+                            <option value="review" ${task.status === 'review' ? 'selected' : ''}>Kiểm tra</option>
+                            <option value="done" ${task.status === 'done' ? 'selected' : ''}>Hoàn thành</option>
+                        </select>
+                    </div>
+                `;
+                cols[task.status].appendChild(card);
+            });
+
+            document.getElementById('count-todo').innerText = counts.todo;
+            document.getElementById('count-progress').innerText = counts.progress;
+            document.getElementById('count-review').innerText = counts.review;
+            document.getElementById('count-done').innerText = counts.done;
+
+            document.getElementById('stat-total').innerText = tasks.length;
+            document.getElementById('stat-progress').innerText = counts.progress;
+            document.getElementById('stat-done').innerText = counts.done;
+            document.getElementById('kanban-badge').innerText = tasks.length;
+        }
+
+        function changeTaskStatus(id, newStatus) {
+            const task = tasks.find(t => t.id === id);
+            if(task) {
+                task.status = newStatus;
+                renderKanban();
+                updateCharts();
+            }
+        }
+
+        // Modal Handlers
+        function openTaskModal() {
+            document.getElementById('taskModal').classList.remove('hidden');
+            document.getElementById('taskModal').classList.add('flex');
+        }
+
+        function closeTaskModal() {
+            document.getElementById('taskModal').classList.add('hidden');
+            document.getElementById('taskModal').classList.remove('flex');
+        }
+
+        function handleCreateTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('taskTitle').value;
+            const assignee = document.getElementById('taskAssignee').value;
+            const priority = document.getElementById('taskPriority').value;
+            const tag = document.getElementById('taskTag').value;
+
+            const newTask = {
+                id: Date.now(),
+                title,
+                assignee,
+                priority,
+                tag,
+                status: 'todo'
+            };
+
+            tasks.push(newTask);
+            closeTaskModal();
+            renderKanban();
+            updateCharts();
+            showToast(`Đã giao nhiệm vụ cho ${assignee}!`);
+            document.getElementById('taskTitle').value = '';
+        }
+
+        function filterTasks() {
+            const query = document.getElementById('globalSearch').value.toLowerCase();
+            const filtered = tasks.filter(t => t.title.toLowerCase().includes(query) || t.assignee.toLowerCase().includes(query));
+            renderKanban(filtered);
+        }
+
+        // Chat System
+        function sendChatMessage(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if(!message) return;
+
+            const chatContainer = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = "flex space-x-3 justify-end";
+            msgDiv.innerHTML = `
+                <div class="text-right">
+                    <div class="flex items-baseline justify-end space-x-2">
+                        <span class="text-[10px] text-slate-400">Vừa xong</span>
+                        <span class="text-xs font-bold text-slate-800">${currentUser.fullName}</span>
+                    </div>
+                    <div class="mt-1 bg-brand-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-sm max-w-md">
+                        ${message}
+                    </div>
+                </div>
+                <img src="${currentUser.avatar}" class="w-8 h-8 rounded-full object-cover shrink-0">
+            `;
+            chatContainer.appendChild(msgDiv);
+            input.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function selectChannel(name) {
+            document.getElementById('current-channel-title').innerText = name;
+        }
+
+        // File Upload Simulation
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            const grid = document.getElementById('filesGrid');
+            const fileCard = document.createElement('div');
+            fileCard.className = "bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3";
+            fileCard.innerHTML = `
+                <i data-lucide="file" class="w-8 h-8 text-brand-500"></i>
+                <div class="flex-1 truncate">
+                    <h4 class="font-semibold text-sm text-slate-800 truncate">${file.name}</h4>
+                    <p class="text-xs text-slate-400">${currentUser.fullName} • ${(file.size/1024).toFixed(1)} KB</p>
+                </div>
+            `;
+            grid.appendChild(fileCard);
+            lucide.createIcons();
+            showToast('Tải tệp lên thành công!');
+        }
+
+        // Render Analytics Progress Bars for 7 Members
+        function renderAnalyticsProgress() {
+            const container = document.getElementById('analyticsMembersProgress');
+            if(!container) return;
+            container.innerHTML = '';
+
+            teamMembers.forEach((m, idx) => {
+                const count = tasks.filter(t => t.assignee === m.name).length;
+                const widthPercent = Math.min(100, Math.max(15, count * 25));
+                const colors = ['bg-brand-600', 'bg-indigo-500', 'bg-emerald-500', 'bg-amber-500', 'bg-purple-500', 'bg-rose-500', 'bg-teal-500'];
+
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <div class="flex justify-between text-sm font-medium mb-1">
+                        <span class="text-slate-800 flex items-center"><img src="${m.avatar}" class="w-4 h-4 rounded-full mr-2 object-cover">${m.name}</span>
+                        <span class="text-slate-500 text-xs">${count} Task</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div class="${colors[idx % colors.length]} h-full rounded-full" style="width: ${widthPercent}%"></div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Chart.js Updates
+        function updateCharts() {
+            const ctx1 = document.getElementById('dashboardChart').getContext('2d');
+            const ctx2 = document.getElementById('analyticsPieChart').getContext('2d');
+
+            const counts = {
+                todo: tasks.filter(t => t.status === 'todo').length,
+                progress: tasks.filter(t => t.status === 'progress').length,
+                review: tasks.filter(t => t.status === 'review').length,
+                done: tasks.filter(t => t.status === 'done').length
+            };
+
+            if(lineChartInstance) lineChartInstance.destroy();
+            lineChartInstance = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Hiện tại'],
+                    datasets: [{
+                        label: 'Nhiệm vụ hoàn thành',
+                        data: [2, 4, 6, counts.done],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            if(pieChartInstance) pieChartInstance.destroy();
+            pieChartInstance = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Cần làm', 'Đang làm', 'Kiểm tra', 'Hoàn thành'],
+                    datasets: [{
+                        data: [counts.todo, counts.progress, counts.review, counts.done],
+                        backgroundColor: ['#64748b', '#3b82f6', '#f59e0b', '#10b981']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        // Init App
+        window.onload = function() {
+            updateUserUI();
+            renderKanban();
+            updateCharts();
+        };
+    </script>
+</body>
+</html>
